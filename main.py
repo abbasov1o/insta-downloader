@@ -42,19 +42,38 @@ def downloader(link):
 
 statistic = 0
 
-@dp.message_handler(commands=['start'])
-async def start(message: types.Message):
-    global statistic
-    statistic += 1
-    await message.reply(f'👋Assalomu aleykum *{message.from_user.first_name}.* Ushbu bot orqali siz *Instagram*dan **post** yoki **story**larni yuklab olishingiz mumkin! Marhamat menga link yuboring!', parse_mode='Markdown')
+@bot.on_message(filters.command(['start']))
+async def start(_, message):
+    await message.reply_text(
+        f"""Salam! {message.from_user.mention}👤\nMən sənin asanlıqla istədiyin video yükləməyə kömək edəcək botam✅\nBotda reklam vermək istəsən sahibimlə əlaqə saxla.\n\nNümunə:\n/musiqi Əlimdə Roza 🎵!""",
+        reply_markup=InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        "✅Qrupa əlavə et", url="https://t.me/song_azbot?startgroup=true")
+                ],
+                [
+                    InlineKeyboardButton(
+                        "🛎Rəsmi Qrupumuz", url="https://t.me/zerotteam"),
+                    InlineKeyboardButton(
+                        "☑️ Rəsmi kanal", url="https://t.me/elisbots")     
+                ],[ 
+                    InlineKeyboardButton(
+                        "🇦🇿PlayList", url="t.me/zenmusiqi"
+                        )
+                ]
+            ]
+        ),
+        disable_web_page_preview=True,
+    )
 
-@dp.message_handler()
+@bot.on_message()
 async def get_url(message: types.Message):
     msg = message.text
     if 'instagram.com' in msg:
         response = downloader(msg)
         if response == 0:
-            await message.answer('Yuborgan Link da xatolik bor! Iltimos linkni tekshirib qayta yuboring!')
+            await message.answer('Göndərdiyiniz linkdə xəta var! Zəhmət olmasa linki yoxlayın və yenidən göndərin!')
         else:
             if response['Type'] == 'image':
                 await bot.send_photo(chat_id=message.chat.id, photo=response['media'])
